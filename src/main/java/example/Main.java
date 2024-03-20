@@ -10,24 +10,35 @@ import java.sql.SQLException;
 public class Main {
   public static void main(String[] args) throws SQLException {
 
+    // String path = "/home/rickoes/personal_code/github/mocking/data/*parquet";
+    String path = "/app/data/*parquet";
+
     Connection conn = DriverManager.getConnection("jdbc:duckdb:");
-    PreparedStatement stmt = conn
-        .prepareStatement("select * from read_parquet('/home/rickoes/personal_code/github/mocking/data/*parquet')");
+
+    runQuery(conn, "select * from read_parquet('" + path + "')");
+
+  }
+
+  private static void runQuery(Connection conn, String command) throws SQLException {
+    PreparedStatement stmt = conn.prepareStatement(command);
 
     ResultSet resultset = stmt.executeQuery();
-    ResultSetMetaData metadata = resultset.getMetaData();
+    printResults(resultset);
+  }
+
+  private static void printResults(ResultSet result) throws SQLException {
+    ResultSetMetaData metadata = result.getMetaData();
     int count = metadata.getColumnCount();
 
-    while (resultset.next()) {
+    while (result.next()) {
       for (int i = 1; i <= count; i++) {
         if (i > 1) {
           System.out.print(", ");
         }
-        String columnValue = resultset.getString(i);
+        String columnValue = result.getString(i);
         System.out.print(columnValue);
       }
       System.out.println("");
     }
-
   }
 }

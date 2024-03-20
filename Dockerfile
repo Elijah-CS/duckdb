@@ -1,12 +1,9 @@
-FROM centos:latest
+FROM eclipse-temurin:17-jdk
 
-RUN cd /etc/yum.repos.d/
-RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
-RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+WORKDIR /app
 
-RUN yum install -y unzip wget
+COPY ./build/ /app/build
+COPY ./data/ /app/data
 
-RUN wget https://github.com/duckdb/duckdb/releases/download/v0.10.1/duckdb_cli-linux-amd64.zip
-RUN unzip duckdb_cli-linux-amd64.zip 
-
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+CMD  java -cp /app/build/libs/java_duckdb.jar:/app/build/resources/* \
+      example.Main
