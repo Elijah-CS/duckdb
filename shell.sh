@@ -1,0 +1,1 @@
+docker ps | sed -n '2 p' | awk '{print $1}'
