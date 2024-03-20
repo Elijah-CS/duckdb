@@ -1,0 +1,33 @@
+plugins {
+  id 'java'
+  id 'eclipse'
+}
+
+repositories {
+    google()
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+  implementation 'org.duckdb:duckdb_jdbc:0.10.0'
+}
+
+configurations {
+  runtime.extendsFrom(compileClasspath, runtimeOnly)
+}
+
+jar {
+  manifest {
+    attributes 'Main-Class': 'example.Main',
+               'Class-Path': configurations.runtime
+  }
+}
+
+task copyToLib(type: Copy) {
+    into "${buildDir}/resources"
+    from configurations.runtime
+}
+
+build.dependsOn(copyToLib)
+jar.dependsOn(copyToLib)
